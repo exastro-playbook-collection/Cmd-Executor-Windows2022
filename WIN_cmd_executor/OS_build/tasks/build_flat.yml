@@ -1,0 +1,25 @@
+---
+- name: ansible.windows.win_command. ({{ parameter.cmd }})
+  ansible.windows.win_command:
+    cmd: "{{ parameter.cmd }}"
+    chdir: "{{ parameter.chdir if parameter.chdir is defined and parameter.chdir is not none else omit }}"
+  when:
+  - parameter.type is defined
+  - parameter.type == 'command'
+
+- name: ansible.windows.win_shell. ({{ parameter.cmd }})
+  ansible.windows.win_shell: "{{ parameter.cmd }}"
+  args:
+    chdir: "{{ parameter.chdir if parameter.chdir is defined and parameter.chdir is not none else omit }}"
+    executable: "{{ parameter.executable if parameter.executable is defined and parameter.executable is not none else omit }}"
+  when:
+  - parameter.type is defined
+  - parameter.type == 'shell'
+
+- name: file upload. ({{ parameter.path }})
+  ansible.windows.win_copy:
+    src: "{{ parameter.file }}"
+    dest: "{{ parameter.path }}"
+  when:
+  - parameter.type is defined
+  - parameter.type == 'upload'
