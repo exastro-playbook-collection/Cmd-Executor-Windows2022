@@ -7,7 +7,7 @@ Ansible Role: WIN_cmd_executor/OS_build
 - 管理マシン(Ansibleサーバ)
   * Linux系OS（RHEL8）
   * Ansible バージョン 2.11.0 以上 (動作確認バージョン [core 2.11.12])
-  * Python バージョン 3.x  (動作確認バージョン 3.6.8)
+  * Python バージョン 3.x  (動作確認バージョン 3.6.8、3.9.18)
 - 管理対象マシン
   * Windows Server 2022
 
