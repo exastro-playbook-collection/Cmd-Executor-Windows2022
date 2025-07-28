@@ -62,7 +62,7 @@ Ansible-PJが公式に提供しているセットアップスクリプトでWinR
 
 | ロール名                            | Description                      |
 | ----------------------------------- | -------------------------------- |
-| [WIN_cmd_executor/OS_build](WIN_cmd_executor/OS_build) | サーバの役割と機能 |
+| [WIN_cmd_executor/OS_build](WIN_cmd_executor/OS_build) | 任意の設定コマンド実行、および任意パスにファイルのアップロード |
 
 ## 情報設定ロールのマニュアル一覧
 各ロールで情報設定可能なパラメータは、以下の各ロールのマニュアル内のRole Variablesセクションに記載されたものとなります。
