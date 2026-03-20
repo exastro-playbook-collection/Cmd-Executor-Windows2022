@@ -1,0 +1,33 @@
+---
+- name: Import check.yml
+  ansible.builtin.import_tasks: check.yml
+
+- name: Remove file.
+  vars:
+    gathering_dest: "{{ (VAR_OS_gathering_dest_all) if VAR_OS_gathering_dest_all is defined else (VAR_OS_gathering_dest) }}"
+    gather_rolename: "WIN_cmd_executor"
+  ansible.builtin.file:
+    path: "{{ gathering_dest }}/{{ inventory_hostname }}/OS/{{ gather_rolename }}"
+    state: absent
+  delegate_to: localhost
+  become: false
+  changed_when: false
+
+- name: Include gathering.yml
+  ansible.builtin.include_tasks: gathering.yml
+  vars:
+    gathering_dest: "{{ (VAR_OS_gathering_dest_all) if VAR_OS_gathering_dest_all is defined else (VAR_OS_gathering_dest) }}"
+    gather_rolename: "WIN_cmd_executor"
+  loop: "{{ VAR_WIN_cmd_executor_gather | flatten(levels=1) }}"
+  loop_control:
+    loop_var: parameter
+    index_var: parameterindex
+
+- name: Import generate.yml
+  ansible.builtin.import_tasks: generate.yml
+  vars:
+    gathering_dest: "{{ (VAR_OS_gathering_dest_all) if VAR_OS_gathering_dest_all is defined else (VAR_OS_gathering_dest) }}"
+    extracting_dest: "{{ (VAR_OS_extracting_dest_all) if VAR_OS_extracting_dest_all is defined else (VAR_OS_extracting_dest) }}"
+    python_cmd: "{{ (VAR_OS_python_cmd_all) if VAR_OS_python_cmd_all is defined else (VAR_OS_python_cmd) }}"
+    gather_rolename: "WIN_cmd_executor"
+    gathering_rolepath: "{{ role_path }}"

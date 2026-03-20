@@ -1,0 +1,43 @@
+---
+- name: Remove file.
+  ansible.builtin.file:
+    path: "{{ extracting_dest }}/{{ inventory_hostname }}/OS/{{ gather_rolename }}"
+    state: absent
+  delegate_to: localhost
+  become: false
+  changed_when: false
+
+- name: Check file existance.
+  ansible.builtin.stat:
+    path: "{{ gathering_dest }}/{{ inventory_hostname }}/OS/{{ gather_rolename }}"
+  delegate_to: localhost
+  become: false
+  register: file_exist
+
+- name: Remove parameter json file
+  ansible.builtin.file:
+    path: "{{ gathering_dest }}/{{ inventory_hostname }}/OS/{{ gather_rolename }}/params.json"
+    state: absent
+  delegate_to: localhost
+  become: false
+  changed_when: false
+
+- name: Create parameter json file
+  vars:
+    user_data:
+      parameter: "{{ VAR_WIN_cmd_executor_gather }}"
+  ansible.builtin.copy:
+    content: "{{ user_data | to_json }}"
+    dest: "{{ gathering_dest }}/{{ inventory_hostname }}/OS/{{ gather_rolename }}/params.json"
+    mode: "0644"
+  delegate_to: localhost
+
+- name: Execute parameter_generate module. ({{ gather_rolename }})
+  vars:
+    json_path: "{{ gathering_dest }}/{{ inventory_hostname }}/OS/{{ gather_rolename }}/params.json"
+  parameter_generate:
+    rolename: "OS/{{ gather_rolename }}"
+    collect_root: "{{ gathering_dest }}/{{ inventory_hostname }}/OS/{{ gather_rolename }}"
+    dest: "{{ extracting_dest }}"
+    specific: "{{ python_cmd }} {{ playbook_dir }}/roles/{{ gather_rolename }}/OS_gathering/files/extracting.py {{ json_path }} {{ VAR_OS_gathering_result }}"
+  when: file_exist.stat.exists

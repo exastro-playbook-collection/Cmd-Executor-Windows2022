@@ -1,0 +1,26 @@
+---
+- name: Check variables. (VAR_OS_gathering_dest)
+  ansible.builtin.fail:
+    msg: "Variables is none. (VAR_OS_gathering_dest)"
+  when: "(VAR_OS_gathering_dest is none) or (not VAR_OS_gathering_dest)"
+
+- name: Check variables. (VAR_OS_extracting_dest)
+  ansible.builtin.fail:
+    msg: "Variables is none. (VAR_OS_extracting_dest)"
+  when: "(VAR_OS_extracting_dest is none) or (not VAR_OS_extracting_dest)"
+
+- name: Check variables. (VAR_OS_python_cmd)
+  ansible.builtin.fail:
+    msg: "Variables is none. (VAR_OS_python_cmd)"
+  when: "(VAR_OS_python_cmd is none) or (not VAR_OS_python_cmd)"
+
+- name: Check variables. (VAR_OS_gathering_result)
+  ansible.builtin.fail:
+    msg: "Variables is none. (VAR_OS_gathering_result)"
+  when: "(VAR_OS_gathering_result is none) or (not VAR_OS_gathering_result)"
+
+- name: Check variables.(VAR_WIN_cmd_executor_gather)
+  ansible.builtin.include_tasks: check_parameter.yml
+  loop: "{{ VAR_WIN_cmd_executor_gather | flatten(levels=1) }}"
+  loop_control:
+    loop_var: parameter

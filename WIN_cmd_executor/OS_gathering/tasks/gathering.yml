@@ -1,0 +1,16 @@
+---
+- name: Set fact
+  ansible.builtin.import_tasks: gathering_definition_set_fact.yml
+  vars:
+    gathering_rolepath: "{{ role_path }}"
+
+- name: Execute role. (gathering)
+  ansible.builtin.include_role:
+    name: "{{ playbook_dir }}/roles/gathering"
+  vars:
+    VAR_gathering_definition_role_path: "{{ playbook_dir }}/roles/{{ gather_rolename }}/OS_gathering"
+    VAR_gathering_label: "{{ gather_rolename }}"
+    VAR_gathering_dest_role_path: "{{ gathering_dest }}/{{ inventory_hostname }}/OS/{{ gather_rolename }}/{{ parameterindex }}"
+    VAR_gathering_command_save_file:
+      - "stdout"
+      - "stderr"

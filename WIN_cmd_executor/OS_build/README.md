@@ -5,9 +5,9 @@ Ansible Role: WIN_cmd_executor/OS_build
 
 # Supports
 - 管理マシン(Ansibleサーバ)
-  * Linux系OS（RHEL8）
-  * Ansible バージョン 2.11.0 以上 (動作確認バージョン [core 2.11.12])
-  * Python バージョン 3.x  (動作確認バージョン 3.6.8、3.9.18)
+  * Linux系OS（AlmaLinux8.10）
+  * Ansible バージョン 2.18.0 以上 (動作確認バージョン [core 2.18.1])
+  * Python バージョン 3.12以上  (動作確認バージョン 3.12.1)
 - 管理対象マシン
   * Windows Server 2022
 
@@ -35,17 +35,17 @@ Ansible Role: WIN_cmd_executor/OS_build
 | Name     | 値変更可能 | Description |
 | -------- | :-----------: | ----------- |
 | `VAR_WIN_CommandExecutor` |||
-| &nbsp;&nbsp;&nbsp;&nbsp;`type` |     〇     | 以下のいずれかのタイプを指定する。<br>command：win_commandでコマンドを実行。コマンドを安全に使用する場合に最適。<br>shell：win_shellでコマンドを実行。シェルを使用し、リダイレクト、コマンドチェーン等使用可能で高い利便性。<br>upload：ファイルをアップロードして指定のパスに配置する。 |
+| &nbsp;&nbsp;&nbsp;&nbsp;`type` |     〇     | 以下のいずれかのタイプを指定する。<br>command：win_commandでコマンドを実行。コマンドを安全に使用する場合に最適。<br>shell：win_shellでコマンドを実行。シェルを使用し、リダイレクト、コマンドチェーン等使用可能で高い利便性。<br>file：ファイルをアップロードして指定のパスに配置する。 |
 | &nbsp;&nbsp;&nbsp;&nbsp;`cmd` | 〇 | 実行したいコマンドを指定する。<br>typeがcommandとshellの場合に有効。<br>例：Get-WindowsUpdate -Install -AcceptEula |
 | &nbsp;&nbsp;&nbsp;&nbsp;`chdir` | 〇 | 移動先のディレクトリパスを指定する。<br>typeがcommandとshellの場合に有効。<br>指定したディレクトリに移動してからcmdに指定したコマンドが実行される。<br>例：C:\\somedir |
 | &nbsp;&nbsp;&nbsp;`executable` | 〇 | コマンドを実行するときに使われるシェルを指定する。<br>typeがshellの場合に有効。ディフォルトはpowershell。<br>例１：powershell<br>例２：cmd |
-| &nbsp;&nbsp;&nbsp;`path` | 〇 | アップロードするファイルの配置先パスを指定する。<br>typeがuploadの場合に有効。<br>例：C:\\Temp\\renamed-foo.conf |
-| &nbsp;&nbsp;&nbsp;`file` | 〇 | アップロードするファイルを登録する。<br>typeがuploadの場合に有効。 |
+| &nbsp;&nbsp;&nbsp;`path` | 〇 | アップロードするファイルの配置先パスを指定する。<br>typeがfileの場合に有効。<br>例：C:\\Temp\\renamed-foo.conf |
+| &nbsp;&nbsp;&nbsp;`file` | 〇 | アップロードするファイルを登録する。<br>typeがfileの場合に有効。 |
 
 ### Example
 ~~~
 VAR_WIN_CommandExecutor:
-- type: upload
+- type: file
   path: C:\Temp\somescript.ps1
   file: somescript.ps1
 - type: shell
@@ -100,7 +100,7 @@ VAR_WIN_CommandExecutor:
   roles:
     - role: cmd-executor-WS2022/OS_build
       VAR_WIN_CommandExecutor:
-      - type: upload
+      - type: file
         path: C:\Temp\somescript.ps1
         file: somescript.ps1
       - type: shell

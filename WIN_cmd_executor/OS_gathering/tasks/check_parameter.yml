@@ -1,0 +1,15 @@
+---
+- name: Check parameter type.
+  ansible.builtin.fail:
+    msg: "type parameter is not defined. Confirm type parameter."
+  when:
+    - parameter.type is not defined or parameter.type is none
+
+- name: Check parameter type(Invalid value).
+  ansible.builtin.fail:
+    msg: "Invalid value is set for the type parameter({{ parameter.type }}). Confirm type parameter."
+  when:
+    - parameter.type != 'command'
+    - parameter.type != 'shell'
+    - parameter.type != 'file'
+    - parameter.type != 'directory'
