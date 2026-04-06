@@ -1,0 +1,92 @@
+---
+- name: Find all files
+  ansible.windows.win_shell: |-
+    $ls = Get-ChildItem "{{ parameter.path }}" -Recurse -File -Force| Where-Object {
+          $_.Attributes -match 'ReparsePoint' -or $_.Attributes -notmatch 'ReparsePoint'}
+    $ls | % FullName
+  register: i_gathering_command_result
+  when:
+    - parameter.type == "directory"
+
+- name: Ensure target directory exists
+  ansible.builtin.file:
+    path: "{{ i_gathered_data_dest }}/0/{{ parameter.path | regex_replace('\\\\', '/') }}"
+    state: directory
+    mode: '0775'
+  delegate_to: localhost
+  become: false
+  when:
+    - parameter.type == "directory"
+
+- name: Fetch files to local(for file)
+  ansible.builtin.fetch:
+    src: "{{ parameter.path }}"
+    dest: "{{ i_gathered_data_dest }}/0/{{ parameter.path | regex_replace('\\\\', '/') }}"
+    flat: true
+  when:
+    - parameter.type == "file"
+
+- name: Fetch files to local(for directory)
+  ansible.builtin.fetch:
+    src: "{{ files }}"
+    dest: "{{ i_gathered_data_dest }}/0/{{ files | regex_replace('\\\\', '/') }}"
+    flat: true
+    fail_on_missing: false
+    validate_checksum: false
+  loop:
+    "{{ i_gathering_command_result.stdout_lines }}"
+  loop_control:
+    loop_var: files
+  changed_when: false
+  when:
+    - parameter.type == "directory"
+
+- name: Find all files(local)
+  ansible.builtin.find:
+    paths: "{{ i_gathered_data_dest }}/0/{{ parameter.path | regex_replace('\\\\', '/') }}"
+    hidden: true
+    recurse: true
+    file_type: "file"
+  changed_when: false
+  register: i_gathering_command_result_localhost
+  delegate_to: localhost
+  when:
+    - parameter.type == "directory"
+
+- name: Create archive(local)
+  ansible.builtin.archive:
+    path: "{{ i_gathered_data_dest }}/0/{{ parameter.path | regex_replace('\\\\', '/') }}"
+    dest: "{{ i_gathered_data_dest }}/0/{{ win_path | regex_replace('\\\\', '/') | basename }}.zip"
+    format: zip
+    mode: "0644"
+  delegate_to: localhost
+  vars:
+    win_path: "{{ parameter.path | regex_replace('^.*[:\\\\/]', '') }}"
+  when:
+    parameter.type == "directory"
+
+- name: Save directory content to file(local)
+  ansible.builtin.copy:
+    content: |
+      {% for file in i_gathering_command_result_localhost.files %}
+      {{ file.path.replace(releasepath, '') }}
+      {% endfor %}
+    dest: "{{ i_gathered_data_dest }}/0/dircontent.txt"
+    mode: "0644"
+  delegate_to: localhost
+  vars:
+    releasepath: "{{ i_gathered_data_dest }}/0"
+  when:
+    - parameter.type == "directory"
+
+- name: Remove all files.
+  vars:
+    win_device_id: "{{ parameter.path | split(':') | first }}"
+  ansible.builtin.file:
+    path: "{{ i_gathered_data_dest }}/0/{{ win_device_id }}:"
+    state: absent
+  delegate_to: localhost
+  become: false
+  changed_when: false
+  when:
+    - parameter.type == "directory"

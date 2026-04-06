@@ -1,0 +1,15 @@
+---
+VAR_OS_gathering_dest: "{{ playbook_dir }}/_gathered_data"
+VAR_OS_extracting_dest: "{{ playbook_dir }}/_parameters"
+VAR_OS_python_cmd: "python3"
+VAR_OS_gathering_result: "VAR_WIN_cmd_executor"
+VAR_WIN_cmd_executor_gather:
+  - type: null
+    cmd: null
+    chdir: null
+    executable: null
+    path: null
+    file: null
+    stdout: null
+    stderr: null
+    dircontent: null

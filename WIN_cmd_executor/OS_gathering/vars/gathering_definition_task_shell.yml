@@ -1,0 +1,11 @@
+---
+- name: Exec commands(shell)
+  ansible.windows.win_shell: "{{ parameter.cmd }}"
+  args:
+    chdir: "{{ parameter.chdir if parameter.chdir is defined and parameter.chdir is not none else omit }}"
+    executable: "{{ parameter.executable if parameter.executable is defined and parameter.executable is not none else omit }}"
+  loop:
+    - shell
+  failed_when: false
+  changed_when: false
+  register: i_gathering_command_result
